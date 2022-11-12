@@ -1,9 +1,12 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import * as faceapi from "face-api.js";
+
+import EmotionsReader from "../EmotionsReader";
 
 import styles from "./camera.module.scss";
 
 const Camera = () => {
+  const [emotions, setEmotions] = useState({});
   const videoWidth = 640;
   const videoHeight = 480;
   const videoRef = useRef();
@@ -53,22 +56,28 @@ const Camera = () => {
       faceapi.matchDimensions(canvasRef.current, displaySize);
       const resized = faceapi.resizeResults(detections, displaySize);
 
-      faceapi.draw.drawDetections(canvasRef.current, resized);
+      // faceapi.draw.drawDetections(canvasRef.current, resized);
       faceapi.draw.drawFaceLandmarks(canvasRef.current, resized);
-      faceapi.draw.drawFaceExpressions(canvasRef.current, resized);
-    }, 1000);
+      // faceapi.draw.drawFaceExpressions(canvasRef.current, resized);
+
+      if (detections) {
+        setEmotions(detections[0].expressions);
+      }
+    }, 100);
   };
+
   return (
     <div className={styles.camera}>
-      <div className="video-container">
+      <div className={styles.videoContainer}>
         <video crossOrigin="anonymous" ref={videoRef} autoPlay></video>
+        <canvas
+          ref={canvasRef}
+          width={videoWidth}
+          height={videoHeight}
+          className={styles.canvas}
+        />
       </div>
-      <canvas
-        ref={canvasRef}
-        width={videoWidth}
-        height={videoHeight}
-        className={styles.canvasContainer}
-      />
+      <EmotionsReader emotions={emotions} />
     </div>
   );
 };

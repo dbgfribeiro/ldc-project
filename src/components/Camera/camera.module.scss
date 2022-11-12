@@ -1,12 +1,19 @@
 .camera {
   width: fit-content;
   height: fit-content;
-  position: relative;
+  display: flex;
+  gap: 2rem;
+  padding: 2rem;
+  background-color: #171717;
 
-  .canvasContainer {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
+  .videoContainer {
+    position: relative;
+    .canvas {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      opacity: 0.5;
+    }
   }
 }

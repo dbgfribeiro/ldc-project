@@ -1,0 +1,20 @@
+.smilometer {
+  background: #1f1f1f;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+
+  > svg {
+    width: 60%;
+  }
+
+  h2 {
+    color: #ebebeb;
+    text-transform: uppercase;
+    font-weight: lighter;
+    letter-spacing: 6px;
+  }
+}

@@ -2,6 +2,7 @@ import React, { useRef, useEffect, useState } from "react";
 import * as faceapi from "face-api.js";
 
 import EmotionsReader from "../EmotionsReader";
+import Smilometer from "../Smilometer";
 
 import styles from "./camera.module.scss";
 
@@ -66,8 +67,23 @@ const Camera = () => {
     }, 100);
   };
 
+  const neonColors =
+    "rgba(" +
+    emotions.sad * 50 +
+    "," +
+    emotions.happy * 50 +
+    "," +
+    emotions.neutral * 50 +
+    ")";
+
   return (
-    <div className={styles.camera}>
+    <div
+      className={styles.camera}
+      style={{
+        borderColor: neonColors,
+        boxShadow: `0 0 200px 20px ${neonColors}`,
+      }}
+    >
       <div className={styles.videoContainer}>
         <video crossOrigin="anonymous" ref={videoRef} autoPlay></video>
         <canvas
@@ -77,7 +93,10 @@ const Camera = () => {
           className={styles.canvas}
         />
       </div>
-      <EmotionsReader emotions={emotions} />
+      <div className={styles.viewer}>
+        <EmotionsReader emotions={emotions} />
+        <Smilometer smile={emotions.happy} />
+      </div>
     </div>
   );
 };

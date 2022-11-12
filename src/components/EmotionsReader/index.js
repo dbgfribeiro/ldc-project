@@ -12,8 +12,8 @@ const EmotionsReader = ({ emotions }) => {
           <span
             style={
               emotions.angry
-                ? { height: emotions.angry * 100 + "%" }
-                : { height: 0 }
+                ? { width: emotions.angry * 100 + "%" }
+                : { width: 0 }
             }
           ></span>
         </div>
@@ -25,8 +25,8 @@ const EmotionsReader = ({ emotions }) => {
           <span
             style={
               emotions.disgusted
-                ? { height: emotions.disgusted * 100 + "%" }
-                : { height: 0 }
+                ? { width: emotions.disgusted * 100 + "%" }
+                : { width: 0 }
             }
           ></span>
         </div>
@@ -38,8 +38,8 @@ const EmotionsReader = ({ emotions }) => {
           <span
             style={
               emotions.fearful
-                ? { height: emotions.fearful * 100 + "%" }
-                : { height: 0 }
+                ? { width: emotions.fearful * 100 + "%" }
+                : { width: 0 }
             }
           ></span>
         </div>
@@ -51,8 +51,8 @@ const EmotionsReader = ({ emotions }) => {
           <span
             style={
               emotions.happy
-                ? { height: emotions.happy * 100 + "%" }
-                : { height: 0 }
+                ? { width: emotions.happy * 100 + "%" }
+                : { width: 0 }
             }
           ></span>
         </div>
@@ -64,8 +64,8 @@ const EmotionsReader = ({ emotions }) => {
           <span
             style={
               emotions.neutral
-                ? { height: emotions.neutral * 100 + "%" }
-                : { height: 0 }
+                ? { width: emotions.neutral * 100 + "%" }
+                : { width: 0 }
             }
           ></span>
         </div>
@@ -76,9 +76,7 @@ const EmotionsReader = ({ emotions }) => {
         <div className={styles.meter}>
           <span
             style={
-              emotions.sad
-                ? { height: emotions.sad * 100 + "%" }
-                : { height: 0 }
+              emotions.sad ? { width: emotions.sad * 100 + "%" } : { width: 0 }
             }
           ></span>
         </div>
@@ -90,8 +88,8 @@ const EmotionsReader = ({ emotions }) => {
           <span
             style={
               emotions.surprised
-                ? { height: emotions.surprised * 100 + "%" }
-                : { height: 0 }
+                ? { width: emotions.surprised * 100 + "%" }
+                : { width: 0 }
             }
           ></span>
         </div>

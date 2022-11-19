@@ -12,9 +12,10 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+  overflow: hidden;
   background-color: #101010;
 }
-.app {
+main {
   display: flex;
   flex-direction: column;
   align-items: center;

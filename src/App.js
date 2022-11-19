@@ -1,13 +1,17 @@
 import React from "react";
-import Camera from "./components/Camera";
-import Messages from "./components/Camera/Messages";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+
+import Home from "./screens/Home";
+import Gallery from "./screens/Gallery";
 
 function App() {
   return (
-    <div className="app">
-      <Messages />
-      <Camera />
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Home />} exact />
+        <Route path="/gallery" element={<Gallery />} exact />
+      </Routes>
+    </Router>
   );
 }
 

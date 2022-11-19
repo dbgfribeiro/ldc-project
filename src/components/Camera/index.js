@@ -1,5 +1,7 @@
 import React, { useRef, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import * as faceapi from "face-api.js";
+import { exportComponentAsJPEG } from "react-component-export-image";
 
 import EmotionsReader from "../EmotionsReader";
 import Smilometer from "../Smilometer";
@@ -8,10 +10,13 @@ import styles from "./camera.module.scss";
 
 const Camera = () => {
   const [emotions, setEmotions] = useState({});
+  const [capture, setCapture] = useState(0);
   const videoWidth = 640;
   const videoHeight = 480;
   const videoRef = useRef();
   const canvasRef = useRef();
+  const resultCanvasRef = useRef();
+  const navigate = useNavigate();
 
   useEffect(() => {
     startVideo();
@@ -61,7 +66,7 @@ const Camera = () => {
       faceapi.draw.drawFaceLandmarks(canvasRef.current, resized);
       // faceapi.draw.drawFaceExpressions(canvasRef.current, resized);
 
-      if (detections) {
+      if (detections.length !== 0) {
         setEmotions(detections[0].expressions);
       }
     }, 100);
@@ -76,6 +81,25 @@ const Camera = () => {
     emotions.neutral * 50 +
     ")";
 
+  const handleCapture = () => {
+    if (capture <= 1) {
+      setCapture(capture + 1);
+    }
+    if (capture === 1) {
+      console.log("Taking photograph...");
+      var canvas = document.getElementById("resultCanvas");
+      var video = document.getElementById("cameraVideo");
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      resultCanvasRef.current
+        .getContext("2d")
+        .drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
+
+      exportComponentAsJPEG(resultCanvasRef, { fileName: "portrait.jpg" });
+    }
+    // navigate("/gallery");
+  };
+
   return (
     <div
       className={styles.camera}
@@ -85,7 +109,12 @@ const Camera = () => {
       }}
     >
       <div className={styles.videoContainer}>
-        <video crossOrigin="anonymous" ref={videoRef} autoPlay></video>
+        <video
+          id="cameraVideo"
+          crossOrigin="anonymous"
+          ref={videoRef}
+          autoPlay
+        ></video>
         <canvas
           ref={canvasRef}
           width={videoWidth}
@@ -95,8 +124,14 @@ const Camera = () => {
       </div>
       <div className={styles.viewer}>
         <EmotionsReader emotions={emotions} />
-        <Smilometer smile={emotions.happy} />
+        <Smilometer emotions={emotions} handleCapture={handleCapture} />
       </div>
+      <canvas
+        className={styles.resultCanvas}
+        ref={resultCanvasRef}
+        id="resultCanvas"
+      ></canvas>
+      {capture == 1 && <div className={styles.flash}></div>}
     </div>
   );
 };

@@ -1,13 +1,20 @@
-import React from "react";
-import ImageGallery from "../../components/ImageGallery";
+import React from 'react';
+import PropTypes from 'prop-types';
 
-const Gallery = () => {
+import ImageGallery from '../../components/ImageGallery';
+
+import styles from './gallery.module.scss';
+
+const Gallery = ({ lastImage }) => {
   return (
-    <main>
-      <h1>Gallery</h1>
-      <ImageGallery />
+    <main className={styles.galleryWrapper}>
+      <ImageGallery lastImage={lastImage} />
     </main>
   );
+};
+
+Gallery.propTypes = {
+  lastImage: PropTypes.string,
 };
 
 export default Gallery;

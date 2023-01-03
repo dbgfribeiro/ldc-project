@@ -1,16 +1,25 @@
-import React, { useRef, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import * as faceapi from "face-api.js";
-import { exportComponentAsJPEG } from "react-component-export-image";
+import React, { useRef, useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 
-import EmotionsReader from "../EmotionsReader";
-import Smilometer from "../Smilometer";
+import { useNavigate } from 'react-router-dom';
 
-import styles from "./camera.module.scss";
+import * as faceapi from 'face-api.js';
 
-const Camera = () => {
+import { storage } from '../../firebase';
+import { ref, uploadBytesResumable } from 'firebase/storage';
+
+import EmotionsReader from '../EmotionsReader';
+import Smilometer from '../Smilometer';
+
+import styles from './camera.module.scss';
+
+const Camera = ({ setNewImage }) => {
   const [emotions, setEmotions] = useState({});
   const [capture, setCapture] = useState(0);
+  const [flash, setFlash] = useState(false);
+  const [readyToCapture, setReadyToCapture] = useState(false);
+  // const [newImage, setNewImage] = useState('');
+
   const videoWidth = 640;
   const videoHeight = 480;
   const videoRef = useRef();
@@ -25,10 +34,10 @@ const Camera = () => {
 
   const loadModels = () => {
     Promise.all([
-      faceapi.nets.tinyFaceDetector.loadFromUri("/models"),
-      faceapi.nets.faceLandmark68Net.loadFromUri("/models"),
-      faceapi.nets.faceRecognitionNet.loadFromUri("/models"),
-      faceapi.nets.faceExpressionNet.loadFromUri("/models"),
+      faceapi.nets.tinyFaceDetector.loadFromUri('/models'),
+      faceapi.nets.faceLandmark68Net.loadFromUri('/models'),
+      faceapi.nets.faceRecognitionNet.loadFromUri('/models'),
+      faceapi.nets.faceExpressionNet.loadFromUri('/models'),
     ]).then(() => {
       faceDetection();
     });
@@ -73,31 +82,75 @@ const Camera = () => {
   };
 
   const neonColors =
-    "rgba(" +
+    'rgba(' +
     emotions.sad * 50 +
-    "," +
+    ',' +
     emotions.happy * 50 +
-    "," +
+    ',' +
     emotions.neutral * 50 +
-    ")";
+    ')';
+
+  useEffect(() => {
+    if (emotions.happy >= 1) {
+      setReadyToCapture(true);
+    } else {
+      setReadyToCapture(false);
+    }
+  }, [emotions]);
+
+  // console.log(readyToCapture);
 
   const handleCapture = () => {
     if (capture <= 1) {
       setCapture(capture + 1);
     }
     if (capture === 1) {
-      console.log("Taking photograph...");
-      var canvas = document.getElementById("resultCanvas");
-      var video = document.getElementById("cameraVideo");
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      resultCanvasRef.current
-        .getContext("2d")
-        .drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
-
-      exportComponentAsJPEG(resultCanvasRef, { fileName: "portrait.jpg" });
+      console.log('Taking photograph in...');
+      function runCapture() {
+        setFlash(true);
+        var canvas = document.getElementById('resultCanvas');
+        var video = document.getElementById('cameraVideo');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        resultCanvasRef.current
+          .getContext('2d')
+          .drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
+        canvas.toBlob(function (blob) {
+          var image = new Image();
+          image.src = blob;
+          setNewImage(URL.createObjectURL(blob));
+          const storageRef = ref(storage, 'smile_' + Date.now() + '.jpg');
+          const uploadTask = uploadBytesResumable(storageRef, blob);
+          uploadTask.on(
+            'state_changed',
+            (snapshot) => {
+              const progress =
+                (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            },
+            (error) => {
+              alert(error);
+            }
+          );
+          setFlash(false);
+        });
+      }
+      if (readyToCapture) {
+        setTimeout(() => {
+          console.log(3);
+        }, 0);
+        setTimeout(() => {
+          console.log(2);
+        }, 1000);
+        setTimeout(() => {
+          console.log(1);
+        }, 2000);
+        setTimeout(runCapture, 3000);
+      }
+      // let timer = setTimeout(runCapture, 3000);
+      // if (!readyToCapture) {
+      //   clearTimeout(timer);
+      // }
     }
-    // navigate("/gallery");
   };
 
   return (
@@ -131,9 +184,13 @@ const Camera = () => {
         ref={resultCanvasRef}
         id="resultCanvas"
       ></canvas>
-      {capture == 1 && <div className={styles.flash}></div>}
+      {flash && <div className={styles.flash}></div>}
     </div>
   );
+};
+
+Camera.propTypes = {
+  setNewImage: PropTypes.func,
 };
 
 export default Camera;

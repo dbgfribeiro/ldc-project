@@ -16,6 +16,7 @@ body {
   background-color: #101010;
 }
 .wrapper {
+  position: relative;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -23,14 +24,25 @@ body {
   overflow: hidden;
   width: 100vw;
   height: 100vh;
-  header,
-  footer {
+
+  .flash {
+    background-color: white;
+    position: fixed;
     width: 100%;
-    height: 10vh;
-    padding: 1rem;
-    background-color: #1f1f1f;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    height: 100vh;
+    left: 0;
+    top: 0;
+    z-index: 10;
+    animation: triggerFlash 0.2s;
+    opacity: 0;
+  }
+}
+
+@keyframes triggerFlash {
+  from {
+    opacity: 0.85;
+  }
+  to {
+    opacity: 0;
   }
 }

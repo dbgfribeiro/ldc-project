@@ -1,24 +1,21 @@
 import React, { useRef, useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
-
 import { useNavigate } from 'react-router-dom';
+import PropTypes from 'prop-types';
 
 import * as faceapi from 'face-api.js';
 
 import { storage } from '../../firebase';
 import { ref, uploadBytesResumable } from 'firebase/storage';
 
-import EmotionsReader from '../EmotionsReader';
 import Smilometer from '../Smilometer';
 
 import styles from './camera.module.scss';
 
-const Camera = ({ setNewImage }) => {
+const Camera = ({ setNewImage, setCountdownStart, hide }) => {
   const [emotions, setEmotions] = useState({});
   const [capture, setCapture] = useState(0);
-  const [flash, setFlash] = useState(false);
-  const [readyToCapture, setReadyToCapture] = useState(false);
-  // const [newImage, setNewImage] = useState('');
+  // const [readyToCapture, setReadyToCapture] = useState(false);
+  const readyToCapture = useRef(false);
 
   const videoWidth = 640;
   const videoHeight = 480;
@@ -90,51 +87,65 @@ const Camera = ({ setNewImage }) => {
     emotions.neutral * 50 +
     ')';
 
+  const smilePercentage = Math.floor(emotions.happy * 100);
+  const neutralScale = emotions.neutral;
   useEffect(() => {
-    if (emotions.happy >= 1) {
-      setReadyToCapture(true);
-    } else {
-      setReadyToCapture(false);
+    if (smilePercentage === 100 && neutralScale <= 0.001) {
+      // setReadyToCapture(true);
+      readyToCapture.current = true;
+      // handleCapture();
+    } else if (smilePercentage < 99) {
+      // setReadyToCapture(false);
+      readyToCapture.current = false;
+      // handleCapture(false);
     }
-  }, [emotions]);
+  }, [smilePercentage]);
 
-  // console.log(readyToCapture);
+  console.log(readyToCapture.current);
 
   const handleCapture = () => {
-    if (capture <= 1) {
-      setCapture(capture + 1);
-    }
-    if (capture === 1) {
-      console.log('Taking photograph in...');
-      function runCapture() {
-        setFlash(true);
-        var canvas = document.getElementById('resultCanvas');
-        var video = document.getElementById('cameraVideo');
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        resultCanvasRef.current
-          .getContext('2d')
-          .drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
-        canvas.toBlob(function (blob) {
-          var image = new Image();
-          image.src = blob;
-          setNewImage(URL.createObjectURL(blob));
-          const storageRef = ref(storage, 'smile_' + Date.now() + '.jpg');
-          const uploadTask = uploadBytesResumable(storageRef, blob);
-          uploadTask.on(
-            'state_changed',
-            (snapshot) => {
-              const progress =
-                (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-            },
-            (error) => {
-              alert(error);
-            }
-          );
-          setFlash(false);
-        });
+    if (readyToCapture.current == true) {
+      if (capture <= 1) {
+        setCapture(capture + 1);
       }
-      if (readyToCapture) {
+      if (capture === 1) {
+        console.log('Taking photograph in...');
+
+        // this function will be triggered 3 seconds after a good smile detection
+        function runCapture() {
+          var canvas = document.getElementById('resultCanvas');
+          var video = document.getElementById('cameraVideo');
+          canvas.width = video.videoWidth;
+          canvas.height = video.videoHeight;
+          // 1st
+          // saves camera video as a canvas image
+          resultCanvasRef.current
+            .getContext('2d')
+            .drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
+          // 2nd
+          // creates an image url form canvas
+          canvas.toBlob(function (blob) {
+            var image = new Image();
+            image.src = blob;
+            setNewImage(URL.createObjectURL(blob));
+            // 3rd
+            // sends the image url to firebase storage
+            const storageRef = ref(storage, 'smile_' + Date.now() + '.jpg');
+            const uploadTask = uploadBytesResumable(storageRef, blob);
+            uploadTask.on(
+              'state_changed',
+              (snapshot) => {
+                const progress =
+                  (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+              },
+              (error) => {
+                alert(error);
+              }
+            );
+          });
+        }
+
+        setCountdownStart(true);
         setTimeout(() => {
           console.log(3);
         }, 0);
@@ -146,16 +157,18 @@ const Camera = ({ setNewImage }) => {
         }, 2000);
         setTimeout(runCapture, 3000);
       }
+
       // let timer = setTimeout(runCapture, 3000);
-      // if (!readyToCapture) {
+      // if (readyToCapture.current == false) {
       //   clearTimeout(timer);
       // }
     }
   };
+  handleCapture();
 
   return (
     <div
-      className={styles.camera}
+      className={!hide ? styles.camera : styles.cameraHidden}
       style={{
         borderColor: neonColors,
         boxShadow: `0 0 200px 20px ${neonColors}`,
@@ -176,21 +189,21 @@ const Camera = ({ setNewImage }) => {
         />
       </div>
       <div className={styles.viewer}>
-        <EmotionsReader emotions={emotions} />
-        <Smilometer emotions={emotions} handleCapture={handleCapture} />
+        <Smilometer emotions={emotions} />
       </div>
       <canvas
         className={styles.resultCanvas}
         ref={resultCanvasRef}
         id="resultCanvas"
       ></canvas>
-      {flash && <div className={styles.flash}></div>}
     </div>
   );
 };
 
 Camera.propTypes = {
   setNewImage: PropTypes.func,
+  setCountdownStart: PropTypes.func,
+  hide: PropTypes.bool,
 };
 
 export default Camera;

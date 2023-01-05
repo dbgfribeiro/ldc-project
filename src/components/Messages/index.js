@@ -1,17 +1,20 @@
-import React, { useState, useEffect } from "react";
-import styles from "./messages.module.scss";
+import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
+import styles from './messages.module.scss';
 
-const Messages = () => {
+import Countdown from '../Countdown';
+
+const Messages = ({ countdownStart, hide }) => {
   const [customMessage, setCustomMessage] = useState(
-    "Give me your best smile!"
+    'Give me your best smile!'
   );
   const messagesList = [
     "I'm still waiting...",
-    "Come on!",
+    'Come on!',
     "That's the best you can do?",
-    "Why so serious?",
-    "Please smiiiile!",
-    "Say cheese!",
+    'Why so serious?',
+    'Please smiiiile!',
+    'Say cheese!',
   ];
 
   useEffect(() => {
@@ -27,7 +30,20 @@ const Messages = () => {
     };
   }, []);
 
-  return <h1 className={styles.message}>{customMessage}</h1>;
+  return (
+    <div className={!hide ? styles.messageContainer : styles.hideMessages}>
+      {!countdownStart ? (
+        <h1 className={styles.message}>{customMessage}</h1>
+      ) : (
+        !hide && <Countdown />
+      )}
+    </div>
+  );
+};
+
+Messages.propTypes = {
+  countdownStart: PropTypes.bool,
+  hide: PropTypes.bool,
 };
 
 export default Messages;

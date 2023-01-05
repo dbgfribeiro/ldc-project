@@ -1,15 +1,12 @@
-import React from "react";
-import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
-import "react-circular-progressbar/dist/styles.css";
-import styles from "./smilometer.module.scss";
+import React from 'react';
+import PropTypes from 'prop-types';
 
-const Smilometer = ({ emotions, handleCapture }) => {
+import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
+import 'react-circular-progressbar/dist/styles.css';
+import styles from './smilometer.module.scss';
+
+const Smilometer = ({ emotions }) => {
   const smilePercentage = Math.floor(emotions.happy * 100);
-  const neutralScale = emotions.neutral;
-
-  if (smilePercentage === 100 && neutralScale <= 0.001) {
-    handleCapture();
-  }
 
   return (
     <div className={styles.smilometer}>
@@ -18,15 +15,19 @@ const Smilometer = ({ emotions, handleCapture }) => {
         minValue={0}
         text={`${smilePercentage}%`}
         styles={buildStyles({
-          trailColor: "#171717",
-          pathColor: "#005fee",
-          textColor: "#ebebeb",
-          textSize: "14px",
+          trailColor: '#171717',
+          pathColor: smilePercentage === 100 ? '#52d42a' : '#005fee',
+          textColor: '#ebebeb',
+          textSize: '14px',
         })}
       />
       <h2>Smilometer</h2>
     </div>
   );
+};
+
+Smilometer.propTypes = {
+  emotions: PropTypes.object,
 };
 
 export default Smilometer;

@@ -1,15 +1,27 @@
-.camera {
+.camera,
+.cameraHidden {
+  background-color: #171717;
   width: fit-content;
   height: fit-content;
   display: flex;
-  gap: 2rem;
   padding: 2rem;
-  background-color: #171717;
+  gap: 2rem;
   border: 2px solid ebebeb;
   transition: 0.2s;
 
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  &.cameraHidden {
+    opacity: 0;
+    transition: 1s;
+  }
+
   .videoContainer {
     position: relative;
+    border-radius: 8px;
     .canvas {
       position: absolute;
       left: 50%;
@@ -29,25 +41,5 @@
     top: 200vh;
     left: 50%;
     transform: translate(-50%, -50%);
-  }
-
-  .flash {
-    background-color: white;
-    position: fixed;
-    width: 100%;
-    height: 100vh;
-    left: 0;
-    top: 0;
-    z-index: 10;
-    animation: triggerFlash 1000s ease-in-out;
-  }
-}
-
-@keyframes triggerFlash {
-  from {
-    opacity: 0.85;
-  }
-  to {
-    opacity: 0;
   }
 }

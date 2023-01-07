@@ -32,7 +32,7 @@ const Messages = ({ countdownStart, hide }) => {
 
   return (
     <div className={!hide ? styles.messageContainer : styles.hideMessages}>
-      {!countdownStart ? (
+      {!countdownStart && !hide ? (
         <h1 className={styles.message}>{customMessage}</h1>
       ) : (
         !hide && <Countdown />

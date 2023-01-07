@@ -2,7 +2,6 @@ import React, { useRef, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import * as faceapi from 'face-api.js';
 
-import { useNavigate } from 'react-router-dom';
 import { storage } from '../../firebase';
 import { ref, uploadBytesResumable } from 'firebase/storage';
 
@@ -116,14 +115,14 @@ const Camera = ({ setNewImage, setCountdownStart, hide }) => {
     if (smilePercentage === 100 && neutralScale <= 0.001) {
       // setTimeout(handleCapture, 3000);
       setReadyToCapture(true);
-      setCountdownStart(true);
+      setTimeout(() => setCountdownStart(true), 1000);
     } else if (smilePercentage < 99) {
       setReadyToCapture(false);
       setCountdownStart(false);
     }
   }, [smilePercentage]);
 
-  useTimeout(handleCapture, readyToCapture ? 3000 : null);
+  useTimeout(handleCapture, readyToCapture ? 4 * 1000 : null);
 
   // generate shadow colors
   const neonColors =

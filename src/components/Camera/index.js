@@ -12,7 +12,9 @@ import useTimeout from '../../hooks';
 const Camera = ({ setNewImage, setCountdownStart, hide }) => {
   // this object will store all the emotion values
   const [emotions, setEmotions] = useState({});
+
   const [readyToCapture, setReadyToCapture] = useState(false);
+
   const videoWidth = 640;
   const videoHeight = 480;
   const videoRef = useRef();

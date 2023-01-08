@@ -10,7 +10,9 @@ import styles from './camera.module.scss';
 import useTimeout from '../../hooks';
 
 const Camera = ({ setNewImage, setCountdownStart, hide }) => {
+  // this object will store all the emotion values
   const [emotions, setEmotions] = useState({});
+
   const [readyToCapture, setReadyToCapture] = useState(false);
 
   const videoWidth = 640;
@@ -20,10 +22,12 @@ const Camera = ({ setNewImage, setCountdownStart, hide }) => {
   const resultCanvasRef = useRef();
 
   useEffect(() => {
+    //on page load start video
     startVideo();
     videoRef && loadModels();
   }, []);
 
+  // load API models needed
   const loadModels = () => {
     Promise.all([
       faceapi.nets.tinyFaceDetector.loadFromUri('/models'),
@@ -35,6 +39,7 @@ const Camera = ({ setNewImage, setCountdownStart, hide }) => {
     });
   };
 
+  // start camera video
   const startVideo = () => {
     navigator.mediaDevices
       .getUserMedia({ video: true })
@@ -46,6 +51,7 @@ const Camera = ({ setNewImage, setCountdownStart, hide }) => {
       });
   };
 
+  // api request for face detection
   const faceDetection = async () => {
     setInterval(async () => {
       const detections = await faceapi
@@ -56,6 +62,7 @@ const Camera = ({ setNewImage, setCountdownStart, hide }) => {
         .withFaceLandmarks()
         .withFaceExpressions();
 
+      // create a canvas video with the same dimensions as the camera video
       canvasRef.current.innerHtml = faceapi.createCanvasFromMedia(
         videoRef.current
       );
@@ -66,13 +73,13 @@ const Camera = ({ setNewImage, setCountdownStart, hide }) => {
       faceapi.matchDimensions(canvasRef.current, displaySize);
       const resized = faceapi.resizeResults(detections, displaySize);
 
-      // faceapi.draw.drawDetections(canvasRef.current, resized);
+      // draws face detectionlandmarks
       faceapi.draw.drawFaceLandmarks(canvasRef.current, resized);
-      // faceapi.draw.drawFaceExpressions(canvasRef.current, resized);
 
       if (detections.length !== 0) {
         setEmotions(detections.expressions);
       }
+      // updates emotion values every millisecond
     }, 100);
   };
 
@@ -111,9 +118,9 @@ const Camera = ({ setNewImage, setCountdownStart, hide }) => {
 
   const smilePercentage = Math.floor(emotions.happy * 100);
   const neutralScale = emotions.neutral;
+  // if smile is 100% program is ready to capture and the countdown starts
   useEffect(() => {
     if (smilePercentage === 100 && neutralScale <= 0.001) {
-      // setTimeout(handleCapture, 3000);
       setReadyToCapture(true);
       setTimeout(() => setCountdownStart(true), 1000);
     } else if (smilePercentage < 99) {
@@ -122,9 +129,10 @@ const Camera = ({ setNewImage, setCountdownStart, hide }) => {
     }
   }, [smilePercentage]);
 
+  // if its ready to capture trigger the capture function after 4 seconds
   useTimeout(handleCapture, readyToCapture ? 4 * 1000 : null);
 
-  // generate shadow colors
+  // generate shadow colors for camera modal
   const neonColors =
     'rgba(' +
     emotions.sad * 50 +

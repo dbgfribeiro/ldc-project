@@ -22,6 +22,7 @@
   .videoContainer {
     position: relative;
     border-radius: 8px;
+    transform: scaleX(-1§);
     .canvas {
       position: absolute;
       left: 50%;

@@ -1,4 +1,7 @@
+// custom hooks
+
 import React from 'react';
+
 export default function useTimeout(callback, delay) {
   const timeoutRef = React.useRef(null);
   const savedCallback = React.useRef(callback);

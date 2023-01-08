@@ -18,6 +18,7 @@ const Messages = ({ countdownStart, hide }) => {
   ];
 
   useEffect(() => {
+    // show a new message form list every 5 seconds
     const interval = setInterval(
       () =>
         setCustomMessage(
@@ -35,6 +36,7 @@ const Messages = ({ countdownStart, hide }) => {
       {!countdownStart && !hide ? (
         <h1 className={styles.message}>{customMessage}</h1>
       ) : (
+        // when the program is ready to capture it hides the messages and starts the countdown
         !hide && <Countdown />
       )}
     </div>

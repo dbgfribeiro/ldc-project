@@ -10,6 +10,7 @@ import { randomNumberInRange, mergeByProperty } from '../../utils';
 import styles from './image-gallery.module.scss';
 
 const ImageGallery = ({ lastImage }) => {
+  // this array will save all images coming from database
   const [smiles, setSmiles] = useState([]);
 
   // sets the limit of images to be shown
@@ -42,7 +43,7 @@ const ImageGallery = ({ lastImage }) => {
 
   useEffect(() => {
     // generates the random number of times the new image will be shown
-    let numberOfCopys = randomNumberInRange(1, 10);
+    let numberOfCopys = randomNumberInRange(2, 10);
     const smileCopys = [];
 
     if (lastImage !== '') {

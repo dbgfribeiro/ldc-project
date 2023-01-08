@@ -13,6 +13,7 @@ const Home = () => {
   const [countdownStart, setCountdownStart] = useState(false);
   const [playShutter] = useSound(shutter);
 
+  // if an image has been taken the program restarts after 30sec
   useTimeout(
     () => {
       window.location.reload();
@@ -20,6 +21,7 @@ const Home = () => {
     newImage !== '' ? 30 * 1000 : null
   );
 
+  // play photo shutter sound when a new image is taken
   useEffect(() => {
     if (newImage !== '') {
       playShutter();
